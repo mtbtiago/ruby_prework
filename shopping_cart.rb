@@ -5,6 +5,8 @@ AMOUNT_TRESHOLD = 5
 AMOUNT_DISCOUNT = 5
 WEEKEND_DISCOUNT = 10
 HOUSEWARE_DISCOUNT = 5
+STR_YOUR_INVOICE = "Your invoice"
+STR_WELLCOME = "Welcome to Shopping REPL"
 
 class ShoppingCartUtils
 	def self.isWeekend
@@ -18,7 +20,11 @@ class ShoppingCartUtils
 	end
 
 	def self.formatCurr(value)
-		return  "$#{value.round(2)}"
+		return "$#{"%#10.2f" % value.round(2)}"
+	end
+
+	def self.formatDescCurr(desc, curr)
+		return "#{"%-20s" % desc}: #{formatCurr(curr)}"
 	end
 end
 
@@ -37,11 +43,13 @@ class ShoppingCartItems
 
 	def showAvailableItems
 		s = 
-			"Available items:\n"
+			"Available items:\n"+
+			"%-2s" % "ID"+" "+"%-20s" % "Name"+" "+"%-11s" % "Price"+"\n"+
+			"=" * 2+" "+"=" * 20 +" "+"=" * 11 +"\n"
 		@items.each{|key, value|
 			s = s + 
-				"ID: #{key}. #{value.name}. "+
-				"Price: #{ShoppingCartUtils.formatCurr(value.price)}\n"
+				"%2d" % key+" "+"%-20s" % value.name+" "+
+				 ShoppingCartUtils.formatCurr(value.price)+"\n"
 		}
 		return s
 	end
@@ -99,12 +107,12 @@ class ShoppingCart
 	def invoice
 		_gross, _discounts, _total = calculate
 		s = 
-			"Your invoice\n"+
-			"============\n"+
+			STR_YOUR_INVOICE+"\n"+
+			"=" * STR_YOUR_INVOICE.length+"\n"+
 			contents+
-			"Subtotal: #{ShoppingCartUtils.formatCurr(_gross)}\n"+
-			"Discounts: #{ShoppingCartUtils.formatCurr(_discounts)}\n"+
-			"Total: #{ShoppingCartUtils.formatCurr(_total)}\n"
+			ShoppingCartUtils.formatDescCurr('Subtotal',_gross)+"\n"+
+			ShoppingCartUtils.formatDescCurr('Discounts',_discounts)+"\n"+
+			ShoppingCartUtils.formatDescCurr('Total',_total)+"\n"
 		return s
 	end
 end
@@ -163,7 +171,7 @@ class REPL
 	
 	def showHelp
 		s = 
-			"Please select:\n"+
+			"\nPlease select:\n"+
 			"0    => check out\n"+
 			"a    => list available items\n" + 
 			"t    => print current total\n"+
@@ -177,29 +185,29 @@ class REPL
 	
 	def execute
 		@shopping_cart.clear
-		puts "========================"
-		puts "Welcome to Shopping REPL"
-		puts "========================"
+		puts "=" * STR_WELLCOME.length
+		puts STR_WELLCOME
+		puts "=" * STR_WELLCOME.length
 		puts @availableItems.showAvailableItems;
 		puts showHelp
 		begin
 			puts "\nPlease entry your choice. Press 'h' for help."
 			c = gets.chomp
-			case 
-			when c == '0'
+			case c
+			when '0'
 				break
-			when c == 'a'
+			when 'a'
 				puts @availableItems.showAvailableItems;
-			when c == 't'
+			when 't'
 				puts "Your current total is #{@shopping_cart.total}"
-			when c == 'i'
+			when 'i'
 				puts @shopping_cart.invoice
-			when c == 'c'
+			when 'c'
 				@shopping_cart.clear
 				puts @shopping_cart.contents
-			when c == 's'
+			when 's'
 				puts @shopping_cart.contents
-			when c == 'h'
+			when 'h'
 				puts showHelp
 			else
 				id = c.to_i
@@ -216,7 +224,6 @@ class REPL
 		puts @shopping_cart.invoice
 	end
 end
-
 
 ################################
 #            main              
