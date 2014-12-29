@@ -20,9 +20,7 @@ class CaesarCipher
 	public
 		def cipher(str,shift = SHIFT)
 			result = ''
-			str.each_char {|c|
-				result = result + getChar(c.ord + shift)
-			}
+			str.each_char {|c|result += getChar(c.ord + shift)}
 			return result
 		end
 		def getCipherAndReverse(str,shift = SHIFT)
@@ -39,7 +37,7 @@ end
 # main
 ################
 myCipher = CaesarCipher.new
-myCipher.getCipherAndReverse(STR1).each{|s| puts s}
+myCipher.getCipherAndReverse(STR1).each{|s|puts s}
 
 begin
 	puts "Enter a sentence. Blank line to end"
@@ -47,6 +45,6 @@ begin
 	if input.empty?
 		break
 	else
-		myCipher.getCipherAndReverse(input).each{|s| puts s}
+		myCipher.getCipherAndReverse(input).each{|s|puts s}
 	end
 end while true
